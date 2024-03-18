@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+    <head>
+       <meta charset="UTF-8">
+
+       <title>Página com pesquisa CEP</title>
+    </head>
+    <body>
+        <label>CNPJ:
+            <input name="cnpj" type="number" id="pesquisaCNPJ" size="40" /></label>
+            <input type="button" value="Buscar no Receita Ws" onclick="buscarEnderecoNoReceitaWs()" /><br /> 
+
+        <label>Rua:
+            <input name="rua" type="text" id="rua" size="60" /></label><br />
+            <label>Bairro:
+            <input name="bairro" type="text" id="bairro" size="40" /></label><br />
+            <label>Cidade:
+            <input name="cidade" type="text" id="cidade" size="40" /></label><br />
+            <label>Estado:
+            <input name="uf" type="text" id="uf" size="2" /></label><br />
+            <label>NomeEmpresarial:
+            <input name="NomeEmpresarial" type="text" id="NomeEmpresarial" size="40" /></label><br />
+
+           
+          </form>
+    </body>
+</html>
+<script>
+  function buscarEnderecoNoReceitaWs() {
+    var componentePesquisaCNPJ = document.getElementById("pesquisaCNPJ").value;
+    alert("O CNPJ digitado é: " + componentePesquisaCNPJ);
+    alert("Funcionou o click no botão buscar");
+
+    fetch('https://cors-anywhere.herokuapp.com/https://receitaws.com.br/v1/cnpj/' + componentePesquisaCNPJ)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Erro ao consultar CNPJ.');
+            }
+            return response.json();
+        })
+        .then(data => {
+            meu_callback(data);
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+}
+
+function meu_callback(conteudo) {
+    if (!("erro" in conteudo)) {
+        //Atualiza os campos com os valores.
+        document.getElementById('rua').value = conteudo.logradouro || "";
+        document.getElementById('bairro').value = conteudo.bairro || "";
+        document.getElementById('cidade').value = conteudo.localidade || "";
+        document.getElementById('uf').value = conteudo.uf || "";
+        document.getElementById('NomeEmpresarial').value = conteudo.NomeEmpresarial || "";
+    } else {
+        //CNPJ não Encontrado.
+        alert("CNPJ não encontrado.");
+    }
+}
+
+     
+</script>
