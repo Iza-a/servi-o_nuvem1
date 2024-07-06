@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Previsão do Tempo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f0f0f0;
+        }
+        .weather-card {
+            margin: 20px auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 600px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .weather-info {
+            margin-top: 20px;
+        }
+        .weather-info p {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="weather-card">
+        <h1>Previsão do Tempo</h1>
+        <form id="weatherForm">
+            <label for="city">Digite o nome da cidade:</label>
+            <input type="text" id="city" name="city" required>
+            <button type="submit">Buscar Previsão</button>
+        </form>
+        <div class="weather-info" id="weatherInfo">
+            <p>Insira o nome da cidade e clique em "Buscar Previsão" para ver a previsão do tempo.</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('weatherForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const city = document.getElementById('city').value.trim();
+            const apiKey = 'f6d88f924d92c4f5d5275ad9c77ac27a'; 
+
+            const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric&lang=pt_br`;
+
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Cidade não encontrada. Verifique o nome e tente novamente.');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    const weatherDescription = data.weather[0].description;
+                    const temperature = data.main.temp;
+                    const cityName = data.name;
+                    const country = data.sys.country;
+
+                    const weatherInfo = `
+                        <p><strong>${cityName}, ${country}</strong></p>
+                        <p>Temperatura: ${temperature}°C</p>
+                        <p>Condição: ${weatherDescription}</p>
+                    `;
+
+                    document.getElementById('weatherInfo').innerHTML = weatherInfo;
+                })
+                .catch(error => {
+                    console.error('Erro ao buscar dados:', error);
+                    document.getElementById('weatherInfo').innerHTML = `<p>${error.message}</p>`;
+                });
+        });
+    </script>
+</body>
+</html>
+
+
+
